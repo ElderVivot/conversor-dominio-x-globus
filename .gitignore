@@ -1,0 +1,10 @@
+data*.zip
+data.zip
+.vscode/
+.mypy_cache/
+__pycache__/
+.git/
+test.py
+.ipynb*/
+*.pyc
+data/
