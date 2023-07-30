@@ -5,5 +5,6 @@ SELECT tab.table_name, col.column_id, col.column_name, col.remarks AS descriptio
        INNER JOIN sys.sysdomain AS domain
             ON    domain.domain_id = col.domain_id
  WHERE tab.table_name = 'foempregados'
-   AND col.column_name LIKE '%sexo%' // pesquisar somente aqui o nome do campo
+   AND col.column_name LIKE '%cart%' // pesquisar somente aqui o nome do campo
+   --AND col.remarks LIKE '%mot%' // pesquisar somente aqui o nome do campo
 ORDER BY col.column_id

@@ -1,23 +1,9 @@
-SELECT emp.codi_emp AS 'EMPRESA',
+SELECT emp.cgce_emp AS 'EMPRESA',
        emp.cgce_emp AS 'FILIAL',
-       fun.i_empregados AS 'REGISTRO DO FUNCIONARIO',
-       fun.nome AS 'NOME FUNCIONARIO',
-       CASE WHEN fun.i_afastamentos = 1 THEN 'ATIVO'
-            WHEN fun.i_afastamentos IN (8,23) THEN 'DESLIGADO'
-            ELSE 'AFASTAMENTO'  
-       END AS 'SITUACAO FUNCIONARIO', 
-       /*( SELECT afatipo.descricao
-           FROM bethadba.FOAFASTAMENTOS_TIPOS AS afatipo 
-          WHERE afatipo.i_afastamentos = fun.i_afastamentos ) AS 'SITUACAO FUNCIONARIO',*/
-       '' AS 'CODIGO DE CONDICAO', -- o que eh
-       ( SELECT DATEFORMAT(res.demissao, 'DD/MM/YYYY') 
-           FROM bethadba.forescisoes AS res
-          WHERE res.codi_emp = fun.codi_emp 
-            AND res.i_empregados = fun.i_empregados 
-            AND res.tipo = 1 ) AS 'DATA DESL/AFAST',
-       fun.cpf AS 'CPF',
-       fun.pis AS 'PIS',
-       fun.i_empregados AS 'CHAPA',
+       fun.i_empregados AS 'REGISTRO PRO-AUT',
+       fun.nome AS 'NOME DO PRO-AUT',
+       '' AS 'TIPO',
+       fun.nome AS 'NOME COMPLETO',
        DATEFORMAT(fun.data_nascimento, 'DD/MM/YYYY') AS 'DATA DE NASCIMENTO',
        ( SELECT mun.codigo_ibge || '-' || mun.nome_municipio 
            FROM bethadba.gemunicipio AS mun 
@@ -25,15 +11,15 @@ SELECT emp.codi_emp AS 'EMPRESA',
        fun.uf_nascimento AS 'UF NASC',
        fun.sexo AS 'SEXO',
        fun.grau_instrucao || '-' || CASE WHEN fun.grau_instrucao = 1 THEN 'Analfabeto'
-                               WHEN fun.grau_instrucao = 2 THEN 'Ensino Fundamental atï¿½ 5ï¿½ ano Incompleto'
-                               WHEN fun.grau_instrucao = 3 THEN 'Ensino Fundamental 5ï¿½ Completo'
-                               WHEN fun.grau_instrucao = 4 THEN 'Ensino Fundamental 6ï¿½ ao 9ï¿½'
+                               WHEN fun.grau_instrucao = 2 THEN 'Ensino Fundamental até 5° ano Incompleto'
+                               WHEN fun.grau_instrucao = 3 THEN 'Ensino Fundamental 5° Completo'
+                               WHEN fun.grau_instrucao = 4 THEN 'Ensino Fundamental 6° ao 9°'
                                WHEN fun.grau_instrucao = 5 THEN 'Ensino Fundamental Completo'
-                               WHEN fun.grau_instrucao = 6 THEN 'Ensino Mï¿½dio Incompleto'
-                               WHEN fun.grau_instrucao = 7 THEN 'Ensino Mï¿½dio Completo'
+                               WHEN fun.grau_instrucao = 6 THEN 'Ensino Médio Incompleto'
+                               WHEN fun.grau_instrucao = 7 THEN 'Ensino Médio Completo'
                                WHEN fun.grau_instrucao = 8 THEN 'Ensino Superior Incompleto'
                                WHEN fun.grau_instrucao = 9 THEN 'Ensino Superior Completo'
-                               WHEN fun.grau_instrucao = 10 THEN 'Pï¿½s Graduaï¿½ï¿½o'
+                               WHEN fun.grau_instrucao = 10 THEN 'Pós Graduação'
                                WHEN fun.grau_instrucao = 11 THEN 'Mestrado'
                                WHEN fun.grau_instrucao = 12 THEN 'Doutorado'
                                WHEN fun.grau_instrucao = 13 THEN 'Ph. D'
@@ -42,33 +28,31 @@ SELECT emp.codi_emp AS 'EMPRESA',
        'BRASILEIRA' AS 'NACIONALIDADE',
        CASE WHEN fun.estado_civil = 'S' THEN 'Solteiro'
              WHEN fun.estado_civil = 'C' THEN 'Casado'
-             WHEN fun.estado_civil = 'V' THEN 'Viuvo'
+             WHEN fun.estado_civil = 'V' THEN 'Viúvo'
              WHEN fun.estado_civil = 'D' THEN 'Divorciado' 
              WHEN fun.estado_civil = 'O' THEN 'Concubinato'
              WHEN fun.estado_civil = 'J' THEN 'Separado judicialmente'
              WHEN fun.estado_civil = 'U' THEN 'Uniao estavel'
              ELSE ''
         END AS 'ESTADO CIVIL',
+       CASE WHEN fun.cor = 0 THEN 'INDIGENA'
+            WHEN fun.cor = 2 THEN 'BRANCA'
+            WHEN fun.cor = 4 THEN 'NEGRA'
+            WHEN fun.cor = 6 THEN 'AMARELA'
+            WHEN fun.cor = 8 THEN 'PARDA'
+            ELSE 'NAO INFORMADO'
+       END AS 'RACA',
        DATEFORMAT(fun.admissao, 'DD/MM/YYYY') AS 'DATA DE ADMISSAO',
-       bco.numero AS 'BANCO ',
-       bco.agencia AS 'AGENCIA',
-       COALESCE(fun.conta_corr, '') || COALESCE(fun.DIGITO_CONTA_PAGAMENTO, '') AS 'CONTA CORRENTE',
        ( SELECT p.nome_pais 
            FROM bethadba.gepais AS p
           WHERE p.codigo_pais = fun.pais_nascimento ) AS 'PAIS NASCIMENTO',
        ( SELECT p.nome_pais 
            FROM bethadba.gepais AS p
           WHERE p.codigo_pais = fun.pais_nacionalidade ) AS 'PAIS NACIONALIDADE',
-       fun.nome AS 'APELIDO',
-       fun.nome AS 'NOME COMPLETO',
-       fun.salario AS 'SALARIO BASE',
        ( SELECT emp.cgce_emp || '-' || cargo.i_cargos || '-' || cargo.nome 
            FROM bethadba.focargos AS cargo 
           WHERE cargo.codi_emp = fun.codi_emp 
             AND cargo.i_cargos = fun.i_cargos ) AS 'FUNCAO',
-       fun.i_sindicatos || '-' || ( SELECT sind.nome 
-                               FROM bethadba.fosindicatos AS sind 
-                              WHERE sind.i_sindicatos = fun.i_sindicatos ) AS 'SINDICATO',
        'GERAL' AS 'AREA',
        fun.i_depto || '-' || ( SELECT depto.nome 
                                  FROM bethadba.fodepto AS depto
@@ -78,59 +62,8 @@ SELECT emp.codi_emp AS 'EMPRESA',
                                  FROM bethadba.foccustos AS ccusto
                                 WHERE ccusto.codi_emp = fun.codi_emp 
                                   AND ccusto.i_ccustos = fun.i_ccustos ) AS 'SETOR',
-       'GERAL' AS 'SECAO FUNCIONARIO',
-       CASE WHEN fun.vinculo = 1 THEN 'Celetista'
-            WHEN fun.vinculo = 2 THEN 'Estatutario'
-            WHEN fun.vinculo = 3 THEN 'Trabalhador Avulso'
-            WHEN fun.vinculo = 4 THEN 'Trabalhador Temporario Lei 6.019/74'
-            WHEN fun.vinculo = 5 THEN 'Celetista Contrato Prazo Determinado' 
-            WHEN fun.vinculo = 6 THEN 'Trabalhador Rural'
-            WHEN fun.vinculo = 8 THEN 'Servidor Pï¿½blico nï¿½o Efetivo'
-            WHEN fun.vinculo = 9 THEN 'Trab. Rural Contrato Prazo Determinado'
-            WHEN fun.vinculo = 10 THEN 'Contrato Prazo Determinado Lei 9.601/98'
-            WHEN fun.vinculo = 50 THEN 'Estagiario'
-            WHEN fun.vinculo = 52 THEN 'Empregado Domestico'
-            WHEN fun.vinculo = 53 THEN 'Aprendiz'
-            WHEN fun.vinculo = 99 THEN 'Celetista regime tempo parcial'
-            ELSE STRING(fun.vinculo)
-       END AS 'VINCULO ENPREGATICIO',
-       CASE WHEN fun.emprego_ant = 1 THEN 'ADMISSAO'
-            WHEN fun.emprego_ant = 2 THEN 'ADMISSAO POR SUCESSAO, INCORPORACAO OU FUSAO'
-            WHEN fun.emprego_ant = 4 THEN 'TRANSFERENCIA SEM ONUS'
-            ELSE STRING(fun.emprego_ant)
-       END AS 'TIPO DE ADMISSAO',
-       CASE WHEN fun.cor = 0 THEN 'INDIGENA'
-            WHEN fun.cor = 2 THEN 'BRANCA'
-            WHEN fun.cor = 4 THEN 'NEGRA'
-            WHEN fun.cor = 6 THEN 'AMARELA'
-            WHEN fun.cor = 8 THEN 'PARDA'
-            ELSE 'NAO INFORMADO'
-       END AS 'RACA',
-       '08:00' AS 'JORNADA DIARIA',
-       '' AS 'DOCUMENTO 3',
-       fun.identidade AS 'RG',
-       fun.org_exp_ident AS 'ORGAO EMISSAO',
-       DATEFORMAT(fun.dt_exp_ident, 'DD/MM/YYYY') AS 'DATA DE EXPEDICAO',
-       fun.uf_exp_ident AS 'UF IDENTIDADE',
-       fun.cart_prof AS 'CTPS',
-       fun.serie_cart_prof AS 'SERIE',
-       fun.uf_cart_prof AS 'UF CTPS',
-       DATEFORMAT(fun.dt_exp_cprof, 'DD/MM/YYYY') AS 'EXPEDICAO CTPS',
-       fun.cart_motorista AS 'CNH',
-       fun.categ_cart_mot AS 'CATEGORIA CNH',
-       DATEFORMAT(fun.venc_cart_mot, 'DD/MM/YYYY') AS 'VALIDADE CNH',
-       DATEFORMAT(fun.data_expedicao_cnh, 'DD/MM/YYYY') AS 'EXPEDICAO CNH',
-       CASE WHEN fun.cart_motorista IS NULL THEN ''
-            ELSE ( SELECT uf.sigla_uf FROM bethadba.geestado AS uf WHERE uf.codigo_uf = fun.codigo_uf_carteira_motorista)
-       END AS 'UF CNH',
-       '' AS 'CIDADE CNH', // nao tem na dominio 
-       fun.cart_reservista AS 'RESERVISTA',
-       fun.cate_reservista AS 'CATEGORIA', 
-       '' AS 'EXPEDICAO RESERVISTA', // nao tem na dominio
-       fun.titulo_eleit AS 'TITULO DE ELEITOR',
-       fun.zona_eleit AS 'ZONA',
-       fun.secao_eleit AS 'SECAO',
-       '' AS 'EXPEDICAO TIT ELEITOR', // nao tem na dominio
+       'GERAL' AS 'SECAO',
+       fun.salario AS 'SALARIO',      
        ( SELECT p.nome_pais 
            FROM bethadba.gepais AS p
           WHERE p.codigo_pais = fun.PAIS_ENDERECO ) AS 'LOCAL DE RESIDENCIA',
@@ -140,30 +73,30 @@ SELECT emp.codi_emp AS 'EMPRESA',
         WHEN 45 THEN 'AEROPORTO'
         WHEN 2 THEN 'Alameda'
         WHEN 46 THEN 'ALAMEDA'
-        WHEN 3 THEN 'Area'
-        WHEN 47 THEN 'AREA'
+        WHEN 3 THEN 'Área'
+        WHEN 47 THEN 'ÁREA'
         WHEN 4 THEN 'Avenida'
         WHEN 48 THEN 'AVENIDA'
-        WHEN 89 THEN 'Balneario'
-        WHEN 90 THEN 'BALNEARIO'
+        WHEN 89 THEN 'Balneário'
+        WHEN 90 THEN 'BALNEÁRIO'
         WHEN 91 THEN 'Bloco'
         WHEN 92 THEN 'BLOCO'
         WHEN 5 THEN 'Campo'
         WHEN 49 THEN 'CAMPO'
-        WHEN 6 THEN 'Chacara'
-        WHEN 50 THEN 'CHaCARA'
-        WHEN 7 THEN 'Colonia'
-        WHEN 51 THEN 'COLï¿½NIA'
-        WHEN 8 THEN 'Condomonio'
-        WHEN 52 THEN 'CONDOMONIO'
+        WHEN 6 THEN 'Chácara'
+        WHEN 50 THEN 'CHÁCARA'
+        WHEN 7 THEN 'Colônia'
+        WHEN 51 THEN 'COLÔNIA'
+        WHEN 8 THEN 'Condomínio'
+        WHEN 52 THEN 'CONDOMÍNIO'
         WHEN 9 THEN 'Conjunto'
         WHEN 53 THEN 'CONJUNTO'
         WHEN 10 THEN 'Distrito'
         WHEN 54 THEN 'DISTRITO'
         WHEN 11 THEN 'Esplanada'
         WHEN 55 THEN 'ESPLANADA'
-        WHEN 12 THEN 'Estacao'
-        WHEN 56 THEN 'ESTACAO'
+        WHEN 12 THEN 'Estação'
+        WHEN 56 THEN 'ESTAÇÃO'
         WHEN 13 THEN 'Estrada'
         WHEN 57 THEN 'ESTRADA'
         WHEN 14 THEN 'Favela'
@@ -190,16 +123,16 @@ SELECT emp.codi_emp AS 'EMPRESA',
         WHEN 66 THEN 'LOTEAMENTO'
         WHEN 23 THEN 'Morro'
         WHEN 67 THEN 'MORRO'
-        WHEN 24 THEN 'Nucleo'
-        WHEN 68 THEN 'NUCLEO'
+        WHEN 24 THEN 'Núcleo'
+        WHEN 68 THEN 'NÚCLEO'
         WHEN 25 THEN 'Parque'
         WHEN 69 THEN 'PARQUE'
         WHEN 26 THEN 'Passarela'
         WHEN 70 THEN 'PASSARELA'
-        WHEN 27 THEN 'Patio'
-        WHEN 71 THEN 'PATIO'
-        WHEN 28 THEN 'Praca'
-        WHEN 72 THEN 'PRACA'
+        WHEN 27 THEN 'Pátio'
+        WHEN 71 THEN 'PÁTIO'
+        WHEN 28 THEN 'Praça'
+        WHEN 72 THEN 'PRAÇA'
         WHEN 97 THEN 'Praia'
         WHEN 98 THEN 'PRAIA'
         WHEN 29 THEN 'Quadra'
@@ -214,8 +147,8 @@ SELECT emp.codi_emp AS 'EMPRESA',
         WHEN 77 THEN 'RUA'
         WHEN 34 THEN 'Setor'
         WHEN 78 THEN 'SETOR'
-        WHEN 35 THEN 'Sitio'
-        WHEN 79 THEN 'SITIO'
+        WHEN 35 THEN 'Sítio'
+        WHEN 79 THEN 'SÍTIO'
         WHEN 36 THEN 'Travessa'
         WHEN 80 THEN 'TRAVESSA'
         WHEN 37 THEN 'Trecho'
@@ -244,19 +177,21 @@ SELECT emp.codi_emp AS 'EMPRESA',
            FROM bethadba.gemunicipio AS mun 
           WHERE mun.codigo_municipio = fun.municipio_endereco ) AS 'MUNICIPIO ENDERECO',
        fun.estado AS 'UF ENDERECO',
-       COALESCE(fun.DDD_CELULAR, '') || COALESCE(fun.celular, '') AS 'TELEFONE'
+       COALESCE(fun.DDD_CELULAR, '') || COALESCE(fun.celular, '') AS 'TELEFONE 1',
+       '' AS 'TELEFONE 2',
+       fun.cpf AS 'CPF',
+       fun.pis AS 'PIS',
+       fun.identidade AS 'RG', 
+       fun.vinculo AS 'CATEGORIA'
+
 
 
 /* nao mexer daqui pra baixo */
   FROM bethadba.foempregados AS fun
        INNER JOIN bethadba.geempre AS emp
             ON    emp.codi_emp = fun.codi_emp
-       LEFT JOIN bethadba.fobancos AS bco
-           ON    bco.i_bancos = fun.i_bancos
 
  WHERE emp.cgce_emp LIKE '07515384%'
-   AND fun.tipo_epr = 1
-   --AND fun.i_afastamentos NOT IN (8)
-   --AND fun.cart_prof IS null
+   AND fun.tipo_epr = 2
 
 ORDER BY emp.codi_emp, fun.i_empregados
