@@ -5,11 +5,11 @@ SELECT emp.codi_emp AS 'EMPRESA',
        CASE WHEN fun.i_afastamentos = 1 THEN 'ATIVO'
             WHEN fun.i_afastamentos IN (8,23) THEN 'DESLIGADO'
             ELSE 'AFASTAMENTO'  
-       END AS 'SITUACAO FUNCIONARIO', 
-       /*( SELECT afatipo.descricao
-           FROM bethadba.FOAFASTAMENTOS_TIPOS AS afatipo 
-          WHERE afatipo.i_afastamentos = fun.i_afastamentos ) AS 'SITUACAO FUNCIONARIO',*/
-       '' AS 'CODIGO DE CONDICAO', -- o que eh
+       END AS 'SITUACAO FUNCIONARIO',
+       COALESCE( ( SELECT afades.descricao
+                     FROM bethadba.FOAFASTAMENTOS_TIPOS AS afades
+                    WHERE afades.I_AFASTAMENTOS = fun.i_afastamentos 
+                      AND afades.I_AFASTAMENTOS NOT IN(1) ) , '') AS 'CODIGO DE CONDICAO',
        ( SELECT DATEFORMAT(res.demissao, 'DD/MM/YYYY') 
            FROM bethadba.forescisoes AS res
           WHERE res.codi_emp = fun.codi_emp 
@@ -109,7 +109,45 @@ SELECT emp.codi_emp AS 'EMPRESA',
        '08:00' AS 'JORNADA DIARIA',
        '' AS 'DOCUMENTO 3',
        fun.identidade AS 'RG',
-       fun.org_exp_ident AS 'ORGAO EMISSAO',
+       CASE WHEN fun.orgao_expedicao_rg = 1 THEN 'SSP'
+			WHEN fun.orgao_expedicao_rg = 2 THEN 'TRE'
+			WHEN fun.orgao_expedicao_rg = 3 THEN'EXT'
+			WHEN fun.orgao_expedicao_rg = 4 THEN'DRT'
+			WHEN fun.orgao_expedicao_rg = 5 THEN'M MILITAR'
+			WHEN fun.orgao_expedicao_rg = 6 THEN'MIN AER'
+			WHEN fun.orgao_expedicao_rg = 7 THEN'MIN EXER'
+			WHEN fun.orgao_expedicao_rg = 8 THEN'MIN MAR'
+			WHEN fun.orgao_expedicao_rg = 9 THEN'DPF'
+			WHEN fun.orgao_expedicao_rg = 10 THEN'INSS'
+			WHEN fun.orgao_expedicao_rg = 11 THEN'SRF'
+			WHEN fun.orgao_expedicao_rg = 12 THEN'CLASSISTAS'
+			WHEN fun.orgao_expedicao_rg = 13 THEN'CRA'
+			WHEN fun.orgao_expedicao_rg = 14 THEN'CRAS'
+			WHEN fun.orgao_expedicao_rg = 15 THEN'CRB'
+			WHEN fun.orgao_expedicao_rg = 16 THEN'CRC'
+			WHEN fun.orgao_expedicao_rg = 17 THEN'CRECI'
+			WHEN fun.orgao_expedicao_rg = 18 THEN'COREN'
+			WHEN fun.orgao_expedicao_rg = 19 THEN'CREA'
+			WHEN fun.orgao_expedicao_rg = 20 THEN'CONRE'
+			WHEN fun.orgao_expedicao_rg = 21 THEN'CRF'
+			WHEN fun.orgao_expedicao_rg = 22 THEN'CREFITO'
+			WHEN fun.orgao_expedicao_rg = 23 THEN'CRM'
+			WHEN fun.orgao_expedicao_rg = 24 THEN'CRMV'
+			WHEN fun.orgao_expedicao_rg = 25 THEN'OMB'
+			WHEN fun.orgao_expedicao_rg = 26 THEN'CRN'
+			WHEN fun.orgao_expedicao_rg = 27 THEN'CRO'
+			WHEN fun.orgao_expedicao_rg = 28 THEN'CONRERP'
+			WHEN fun.orgao_expedicao_rg = 29 THEN'CRP'
+			WHEN fun.orgao_expedicao_rg = 30 THEN'CRQ'
+			WHEN fun.orgao_expedicao_rg = 31 THEN'CORE'
+			WHEN fun.orgao_expedicao_rg = 32 THEN'OAB'
+			WHEN fun.orgao_expedicao_rg = 33 THEN'OE'
+			WHEN fun.orgao_expedicao_rg = 34 THEN'DOC ESTR'
+			WHEN fun.orgao_expedicao_rg = 35 THEN'CRE'
+			WHEN fun.orgao_expedicao_rg = 36 THEN'REG CIVIL'
+			WHEN fun.orgao_expedicao_rg = 37 THEN'DETRAN'
+			ELSE STRING(fun.orgao_expedicao_rg)
+	   END AS 'ORGAO EMISSAO',
        DATEFORMAT(fun.dt_exp_ident, 'DD/MM/YYYY') AS 'DATA DE EXPEDICAO',
        fun.uf_exp_ident AS 'UF IDENTIDADE',
        fun.cart_prof AS 'CTPS',

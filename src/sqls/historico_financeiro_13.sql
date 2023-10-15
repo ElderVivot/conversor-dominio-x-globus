@@ -36,6 +36,6 @@ SELECT emp.cgce_emp AS 'EMPRESA',
               AND eve.i_eventos = mov.i_eventos
 
  WHERE emp.cgce_emp LIKE '07515384%'
-   AND mov.tipo_proces not in (51,52)
+   AND mov.tipo_proces in (51,52)
 
 ORDER BY mov.codi_emp, mov.i_empregados, mov.data

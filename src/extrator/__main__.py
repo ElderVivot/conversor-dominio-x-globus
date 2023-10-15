@@ -40,10 +40,11 @@ class MainExtrator:
         folderSqls = os.path.join(folderSrc, 'sqls')
 
         LoopSqls(logger, folderSqls, {},
-                 ['empresas', 'funcionarios', 'funcao', 'pro_labore', 'dependentes', 'desligamento', 'eventos', 'historico_salarial', 'historico_ferias', 'afastamento',
-                  # 'historico_financeiro'
-                  ]
-                 ).main()
+                 [
+            # 'empresas', 'funcionarios', 'funcao', 'pro_labore', 'dependentes', 'desligamento', 'eventos', 'historico_salarial', 'historico_ferias', 'afastamento',
+            'historico_financeiro', 'historico_financeiro_13'
+        ]
+        ).main()
 
 
 if __name__ == "__main__":

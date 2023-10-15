@@ -5,7 +5,7 @@ SELECT emp.cgce_emp AS 'EMPRESA',
        DATEFORMAT(afa.data_folha, 'DD/MM/YYYY') AS 'INICIO DE AFASTAMENTO', /* sem considerar os 15 primeiros dias */
        DATEFORMAT(days(afa.data_real, -1), 'DD/MM/YYYY') AS 'ULTIMO DIA DE TRABALHO',
        afadesc.descricao AS 'CONDICAO DE AFASTAMENTO',
-       DATEFORMAT(days(afa.data_fim, -1), 'DD/MM/YYYY') AS 'ULTIMO DIA DE AFASTAMENTO'
+       DATEFORMAT(afa.data_fim, 'DD/MM/YYYY') AS 'ULTIMO DIA DE AFASTAMENTO'
 
 
 /* nao mexer daqui pra baixo */

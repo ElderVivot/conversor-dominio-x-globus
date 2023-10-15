@@ -18,5 +18,6 @@ SELECT emp.codi_emp AS 'ID_EMPRESA', mov.tipo_proces AS 'CD_TIPO_FOLHA', fun.cpf
 
  WHERE emp.codi_emp = '#codi_emp#'
    AND mov.rateio = 0
+   AND mov.tipo_proces not in (51,52)
 
 ORDER BY mov.codi_emp, mov.i_empregados, mov.data
